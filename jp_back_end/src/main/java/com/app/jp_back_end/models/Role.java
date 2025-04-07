@@ -2,7 +2,6 @@ package com.app.jp_back_end.models;
 
 import com.app.jp_back_end.models.types.ERole;
 import jakarta.persistence.*;
-import jdk.jfr.Timestamp;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -24,10 +23,10 @@ public class Role {
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "role")
     private Set<User> users;
 
-    @Timestamp
-    @Column(name = "created_at", updatable = true, insertable = false, nullable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime created;
 
+    // PrePersist method to set created timestamp
     @PrePersist
     public void prePersist() {
         if (created == null) {
@@ -35,32 +34,33 @@ public class Role {
         }
     }
 
+    // Getters & Setters
     public long getId() {
         return id;
-    }
-
-    public ERole getRoleName() {
-        return roleName;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public LocalDateTime getCreated() {
-        return created;
     }
 
     public void setId(long id) {
         this.id = id;
     }
 
+    public ERole getRoleName() {
+        return roleName;
+    }
+
     public void setRoleName(ERole roleName) {
         this.roleName = roleName;
     }
 
+    public Set<User> getUsers() {
+        return users;
+    }
+
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
     }
 
     public void setCreated(LocalDateTime created) {

@@ -1,13 +1,10 @@
 package com.app.jp_back_end.models;
 
-
 import com.app.jp_back_end.models.types.Status;
 import jakarta.persistence.*;
 import jdk.jfr.Timestamp;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 
 @Entity
@@ -20,50 +17,38 @@ public class Application {
     @SequenceGenerator(name = "application_generator", sequenceName = "application_generator", allocationSize = 1, initialValue = 1)
     private long id;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "", orphanRemoval = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "job_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT))
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_application_user"))
+    private User seeker;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "job_id", nullable = false, foreignKey = @ForeignKey(name = "fk_application_job"))
     private Job job;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "", orphanRemoval = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "job_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT))
-    private Company company;
-
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "")
-    @JoinTable(name = "application_seeker",
-            joinColumns = {@JoinColumn(name = "application_id")},
-            inverseJoinColumns = {@JoinColumn(name= "user_id")}
-    )
-    private Set<User> seeker = new HashSet<>();
-
-    @Column(name = "status", nullable = false, updatable = true, insertable = true, unique = false)
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private Status status;
 
-    @Column(name = "resume_link", nullable = false, updatable = true, insertable = true, unique = true)
-    private String resumeLink;
+    @Column(name = "cover_letter", columnDefinition = "TEXT")
+    private String coverLetter;
+
     @Timestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime created;
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = true, updatable = true)
-    private LocalDateTime updated;
-
-    @Column(name = "applied_at", nullable = true, updatable = false)
-    private LocalDateTime appliedAt;
-
-    @Column(name = "deleted", nullable = false, updatable = true)
-    private boolean deleted = false;
+    @Timestamp
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
     @PrePersist
-    private void onCreate() {
-        if (created == null) {
-            created = LocalDateTime.now();
-        }
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
-    private void onUpdate() {
-        updated = LocalDateTime.now();
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     public long getId() {
@@ -74,28 +59,20 @@ public class Application {
         this.id = id;
     }
 
+    public User getSeeker() {
+        return seeker;
+    }
+
+    public void setSeeker(User user) {
+        this.seeker = seeker;
+    }
+
     public Job getJob() {
         return job;
     }
 
     public void setJob(Job job) {
         this.job = job;
-    }
-
-    public Company getCompany() {
-        return company;
-    }
-
-    public void setCompany(Company company) {
-        this.company = company;
-    }
-
-    public Set<User> getSeeker() {
-        return seeker;
-    }
-
-    public void setSeeker(Set<User> seeker) {
-        this.seeker = seeker;
     }
 
     public Status getStatus() {
@@ -106,59 +83,40 @@ public class Application {
         this.status = status;
     }
 
-    public String getResumeLink() {
-        return resumeLink;
+    public String getCoverLetter() {
+        return coverLetter;
     }
 
-    public void setResumeLink(String resumeLink) {
-        this.resumeLink = resumeLink;
+    public void setCoverLetter(String coverLetter) {
+        this.coverLetter = coverLetter;
     }
 
-    public LocalDateTime getCreated() {
-        return created;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdated() {
-        return updated;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated(LocalDateTime updated) {
-        this.updated = updated;
-    }
-
-    public LocalDateTime getAppliedAt() {
-        return appliedAt;
-    }
-
-    public void setAppliedAt(LocalDateTime appliedAt) {
-        this.appliedAt = appliedAt;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override
     public String toString() {
         return "Application{" +
                 "id=" + id +
-                ", job=" + job +
-                ", company=" + company +
                 ", seeker=" + seeker +
+                ", job=" + job +
                 ", status=" + status +
-                ", resumeLink='" + resumeLink + '\'' +
-                ", created=" + created +
-                ", updated=" + updated +
-                ", appliedAt=" + appliedAt +
-                ", deleted=" + deleted +
+                ", coverLetter='" + coverLetter + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }
