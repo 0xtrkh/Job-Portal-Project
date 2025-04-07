@@ -1,5 +1,6 @@
 package com.app.jp_back_end.models;
 
+
 import jakarta.persistence.*;
 import jdk.jfr.Timestamp;
 
@@ -19,6 +20,7 @@ public class User {
     private String firstName;
 
     @Column(name = "last_name", nullable = false,length = 50, updatable = true, insertable = true)
+
     private String lastName;
 
     @Column(name = "email", nullable = false,length = 50, updatable = true, insertable = true, unique = true)
@@ -32,12 +34,17 @@ public class User {
     private Role role;
 
     @Timestamp
+    @Column(name = "created_at", updatable = true, insertable = false, nullable = false)
     private LocalDateTime created;
 
     @Timestamp
+    @Column(name = "update_at", updatable = true, insertable = false, nullable = false)
     private LocalDateTime modified;
 
-    public User() {}
+    @Column(name = "is_deleted", updatable = true)
+    private boolean deleted;
+
+
 
     @PrePersist
     public void prepersist() {
